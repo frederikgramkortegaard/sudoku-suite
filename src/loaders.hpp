@@ -140,6 +140,18 @@ SDMPuzzleCollection loadPuzzleCollectionFromSDMFile(std::string filename)
 {
     debug("Loading puzzle collection from SDM file: '%s'\n", filename.c_str());
 
+    if (!std::filesystem::exists(filename))
+    {
+        std::cerr << "File does not exist" << std::endl;
+        return {};
+    }
+
+    if (std::filesystem::path(filename).extension() != ".sdm")
+    {
+        std::cerr << "File is not an SDM file" << std::endl;
+        return {};
+    }
+
     std::ifstream
         file(filename);
 
@@ -179,6 +191,18 @@ SDMPuzzleCollection loadPuzzleCollectionFromSDMFile(std::string filename)
 SCLFile loadSCLFromSCLFile(std::string filename)
 {
     debug("Loading SCL file: '%s'\n", filename.c_str());
+
+    if (!std::filesystem::exists(filename))
+    {
+        std::cerr << "File does not exist" << std::endl;
+        return {};
+    }
+
+    if (std::filesystem::path(filename).extension() != ".scl")
+    {
+        std::cerr << "File is not an SCL file" << std::endl;
+        return {};
+    }
 
     std::ifstream file(filename);
 

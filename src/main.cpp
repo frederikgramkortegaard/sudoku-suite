@@ -1,4 +1,3 @@
-/**/
 
 #include <iostream>
 #include <fstream>
@@ -7,6 +6,7 @@
 #include <string>
 
 #include "sudoku.hpp"
+#include "solve.hpp"
 #include "loaders.hpp"
 #include "argparser.hpp"
 #include "printer.hpp"
@@ -21,7 +21,6 @@ int main(int argc, char **argv)
         std::cout << "Usage: suite [options] [input-file]" << std::endl;
         std::cout << "Options:" << std::endl;
         std::cout << "  -h, --help    Show this help message and exit" << std::endl;
-        std::cout << "  -f <filename>    Load a file" << std::endl;
         return 0;
     }
 
@@ -32,19 +31,25 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    // SDMPuzzleCollection puzzles = loadPuzzleCollectionFromSDMFile(filename);
-    // for (auto &puzzle : puzzles.puzzles)
-    //{
-    //     printSudoku(puzzle);
-    // }
+    Sudoku *sudoku = loadSudokuFromFile(filename);
 
-    SCLFile sclFile = loadSCLFromSCLFile(filename);
-    std::cout << "Ratings version: " << sclFile.sudocue_rating_file_version << std::endl;
-    std::cout << "Rated File: " << sclFile.path_of_rated_file << std::endl;
-    for (auto &rating : sclFile.ratings)
+    if (sudoku == nullptr)
     {
-        std::cout << "R: " << rating.R << std::endl;
+        std::cerr << "Failed to load Sudoku from file" << std::endl;
+        return 1;
     }
+
+    printBoard(sudoku->board);
+
+    Board *solved_board = backtracking(sudoku->board);
+
+    if (solved_board == nullptr)
+    {
+        std::cerr << "Failed to solve Sudoku" << std::endl;
+        return 1;
+    }
+
+    printBoard(solved_board);
 
     return 0;
 }

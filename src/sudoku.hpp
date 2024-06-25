@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include "solve.hpp"
 #include "board.hpp"
 #include "utils.hpp"
 #include "formats.hpp"
