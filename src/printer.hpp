@@ -41,11 +41,11 @@ void printSudoku(Sudoku *sudoku)
     // Format dependent metadata
     if (sudoku->format == FormatType::SDK)
     {
-        std::cout << "Author: " << sudoku->author << std::endl;
-        std::cout << "Description: " << sudoku->description << std::endl;
-        std::cout << "Comment: " << sudoku->comment << std::endl;
-        std::cout << "Date Published: " << sudoku->date_published << std::endl;
-        std::cout << "Source: " << sudoku->source << std::endl;
+        std::cout << "Author: " << sudoku->sdk_data.author << std::endl;
+        std::cout << "Description: " << sudoku->sdk_data.description << std::endl;
+        std::cout << "Comment: " << sudoku->sdk_data.comment << std::endl;
+        std::cout << "Date Published: " << sudoku->sdk_data.date_published << std::endl;
+        std::cout << "Source: " << sudoku->sdk_data.source << std::endl;
     }
 
     printBoard(sudoku->board);

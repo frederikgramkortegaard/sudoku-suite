@@ -4,79 +4,81 @@
 
 #include "sudoku.hpp"
 #include "board.hpp"
+
 #include <concepts>
 #include <vector>
 #include <functional>
 
-// Forward declare default solver
-Board *backtracking(Board *board);
-
-void solve(Board *board, std::function<Board *(Board *)> solver = backtracking)
-{
-    solver(board);
-}
-
-Board *copy_and_solve(Board *board, std::function<Board *(Board *)> solver)
-{
-    Board *copy = new Board();
-    *copy = *board;
-    return solver(copy);
-}
-
-bool hasSolution(Board *board, std::function<Board *(Board *)> solver = backtracking)
-{
-    Board *copy = new Board();
-    *copy = *board;
-    return solver(copy) != nullptr;
-}
-
 /*
-    Backtracking algorithm for solving Sudoku puzzles.
+    A Sudoku solver is a class that can solve a given Sudoku puzzle. It can be extended to include more information about the solving process.
     Returns a solved board if a solution exists, otherwise returns nullptr.
 */
-Board *backtracking(Board *board)
+class SudokuSolver
 {
-    // Find the first empty cell
-    int row = -1;
-    int col = -1;
-    for (int i = 0; i < 9; i++)
+
+public:
+    Board *solve(Sudoku *sudoku)
     {
-        for (int j = 0; j < 9; j++)
+        solve(sudoku->board);
+    }
+    virtual Board *solve(Board *board) = 0;
+};
+
+/*
+    https://en.wikipedia.org/wiki/Sudoku_solving_algorithms#Backtracking
+*/
+class BacktrackingSolver : public SudokuSolver
+{
+
+    Board *solve(Board *board) override
+    {
+        return this->backtracking(board);
+    }
+
+    Board *backtracking(Board *board)
+    {
+        // Find the first empty cell
+        int row = -1;
+        int col = -1;
+        for (int i = 0; i < 9; i++)
         {
-            if (board->cells[i][j].value == 0)
+            for (int j = 0; j < 9; j++)
             {
-                row = i;
-                col = j;
+                if (board->cells[i][j].value == 0)
+                {
+                    row = i;
+                    col = j;
+                    break;
+                }
+            }
+            if (row != -1)
+            {
                 break;
             }
         }
-        if (row != -1)
+
+        // If there are no empty cells, the board is solved
+        if (row == -1)
         {
-            break;
+            return board;
         }
-    }
 
-    // If there are no empty cells, the board is solved
-    if (row == -1)
-    {
-        return board;
-    }
-
-    // Try all possible values for the empty cell
-    for (int value = 1; value <= 9; value++)
-    {
-        board->cells[row][col].value = value;
-        if (isBoardValid(board))
+        // Try all possible values for the empty cell
+        for (int value = 1; value <= 9; value++)
         {
-            Board *result = backtracking(board);
-            if (result != nullptr)
+            board->cells[row][col].value = value;
+            if (isBoardValid(board))
             {
-                return result;
+                Board *result = backtracking(board);
+                if (result != nullptr)
+                {
+                    return result;
+                }
             }
         }
-    }
 
-    // If no value works, backtrack
-    board->cells[row][col].value = 0;
-    return nullptr;
-}
+        // If no value works, backtrack
+        board->cells[row][col].value = 0;
+        return nullptr;
+    }
+};
